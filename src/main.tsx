@@ -7,7 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter basename={import.meta.env.DEV ? "/" : "/Flashcard-app-demo/"}>
+    <BrowserRouter basename={import.meta.env.DEV ? "/" : "/Flashcard-app-demo-mobile/"}>
       <App />
     </BrowserRouter>
   </React.StrictMode>,
