@@ -170,8 +170,8 @@ const SubjectListPage: React.FC = () => {
         ))}
         <Card className="flex items-center justify-center cursor-pointer shadow" onClick={addNewSubject}>
           <CardContent>
-            <div className="text-center">
-              <PlusCircle className="mx-auto mb-2" size={24} />
+            <div className="flex items-center text-center mt-4">
+              <PlusCircle className="mx-auto mr-2" size={24} />
               <p>新しい科目を追加</p>
             </div>
           </CardContent>
