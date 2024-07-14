@@ -120,12 +120,14 @@ const SubjectListPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 bg-gray-100">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold mb-4">単語帳アプリ</h1>
-        <Button onClick={goToTagList} variant="outline" className='border-black'>
-          <Tag className="mr-2 h-4 w-4" />
-          タグ一覧
-        </Button>
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold mb-2">単語帳アプリ</h1>
+        <div className="flex justify-end">
+          <Button onClick={goToTagList} variant="outline" className='border-black'>
+            <Tag className="mr-2 h-4 w-4" />
+            タグ一覧
+          </Button>
+        </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {subjects.map((subject) => (

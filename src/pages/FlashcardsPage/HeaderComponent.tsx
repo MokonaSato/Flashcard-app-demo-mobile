@@ -26,17 +26,17 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
   onNewWord 
 }) => {
   return (
-    <div className="flex justify-between items-center mb-6">
-      <div className="flex items-center">
+    <div className="mb-6">
+      <div className="flex items-center mb-2">
         <Button onClick={onNavigateBack} variant="ghost" size="sm" className="mr-2">
           <ChevronLeft size={16} />
         </Button>
         <h1 className="text-2xl font-bold">{subjectName}</h1>
       </div>
-      <div className="flex items-center">
+      <div className="flex justify-end items-center space-x-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="mr-2 border-black">
+            <Button variant="outline" size="sm" className="border-black">
               <Filter size={16} className="mr-2" />
               フィルター
             </Button>
@@ -55,7 +55,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({
         </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="mr-2 border-black">
+            <Button variant="outline" size="sm" className="border-black">
               <SortAsc size={16} className="mr-2" />
               ソート
             </Button>

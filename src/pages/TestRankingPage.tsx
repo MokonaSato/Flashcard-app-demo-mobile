@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { ArrowUpDown, ChevronDown, ChevronUp, ChevronLeft } from 'lucide-react';
 import LoadingSpinner from './common/LoadingSpinner';
 import ErrorDisplay from './common/ErrorDisplay';
-import { Subject } from '../types'
 
 interface Question {
   id: number;
@@ -46,7 +45,6 @@ const TestRankingPage: React.FC = () => {
   const navigate = useNavigate();
   
   const [testName, setTestName] = useState<string>('');
-  const [subjectName, setSubjectName] = useState<string>('');
   const [questions, setQuestions] = useState<QuestionRanking[]>([]);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -60,7 +58,6 @@ const TestRankingPage: React.FC = () => {
       setError(null);
       try {
         const fetchTestSets = localStorage.getItem('testSets')
-        const fetchSubjects = localStorage.getItem('subjects')
         const fetchTestResults = localStorage.getItem('testResults')
         if (fetchTestSets && fetchTestResults){
           const parseTestSets: TestSet[] = JSON.parse(fetchTestSets)
@@ -76,13 +73,6 @@ const TestRankingPage: React.FC = () => {
           const details = testSet.questions.reduce((acc, q) => ({...acc, [q.id]: q}), {});
           setQuestionDetails(details);
         }
-        if (fetchSubjects) {
-          const parsedSubjects: Subject[] = JSON.parse(fetchSubjects)
-          setSubjectName(parsedSubjects.filter(s => s.id === Number(subjectId))[0].name);
-        }
-
-        
-
       } catch (err) {
         setError('データの読み込み中にエラーが発生しました。後でもう一度お試しください。');
         console.error('Error fetching data:', err);
@@ -146,17 +136,26 @@ const TestRankingPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 bg-gray-100">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
-        <Button onClick={goToTestList} variant="ghost" size="sm" className="mr-2">
-          <ChevronLeft size={16} />
-        </Button>
-          <h1 className="text-2xl font-bold">{subjectName} - {testName} - 正答率ランキング</h1>
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center">
+            <Button onClick={goToTestList} variant="ghost" size="sm" className="mr-2">
+              <ChevronLeft size={16} />
+            </Button>
+            <h1 className="text-2xl font-bold truncate">{testName} - 正答率ランキング</h1>
+          </div>
         </div>
-        <Button onClick={toggleSortOrder} variant="outline" size="sm" className='border-black'>
-          <ArrowUpDown size={16} className="mr-2" />
-          {sortOrder === 'asc' ? '正答率：低い順' : '正答率：高い順'}
-        </Button>
+        <div className="flex justify-end">
+          <Button 
+            onClick={toggleSortOrder} 
+            variant="outline" 
+            size="sm" 
+            className='border-black text-sm py-1'
+          >
+            <ArrowUpDown size={16} className="mr-2" />
+            {sortOrder === 'asc' ? '正答率：低い順' : '正答率：高い順'}
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-4">
