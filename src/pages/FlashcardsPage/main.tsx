@@ -1,16 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import 'react-quill/dist/quill.snow.css';
-import AlertComponent from '../common/AlertComponent';
 import HeaderComponent from './HeaderComponent';
 import WordCardList from './WordCardList';
-import WordEditForm from './WordEditForm';
-import NewTagDialog from './NewTagDialog';
 import LoadingSpinner from '../common/LoadingSpinner';
 import ErrorDisplay from '../common/ErrorDisplay';
 import { Word, Tag, Subject } from '../../types';
 
-const FlashcardsPage = () => {
+const FlashcardsPage: React.FC = () => {
   const navigate = useNavigate();
   const { subjectId } = useParams();
 
@@ -18,20 +14,10 @@ const FlashcardsPage = () => {
   const [words, setWords] = useState<Word[]>([]);
   const [filteredWords, setFilteredWords] = useState<Word[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
-  const [selectedWord, setSelectedWord] = useState<Word | null>(null);
-  const [newWord, setNewWord] = useState<string>('');
-  const [newMeaning, setNewMeaning] = useState<string>('');
-  const [newTags, setNewTags] = useState<number[]>([]);
-  const [showWarning, setShowWarning] = useState<boolean>(false);
-  const [pendingWordSelection, setPendingWordSelection] = useState<Word | null>(null);
   const [filterMarked, setFilterMarked] = useState<'all' | 'marked' | 'unmarked'>('all');
   const [sortMethod, setSortMethod] = useState<string>('createdAt-desc');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [showNewTagDialog, setShowNewTagDialog] = useState<boolean>(false);
-  const [newTagName, setNewTagName] = useState<string>('');
-  const [isContentChanged, setIsContentChanged] = useState<boolean>(false);
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,6 +26,7 @@ const FlashcardsPage = () => {
       try {
         await fetchWords();
         await fetchTags();
+        await fetchSubjectName();
       } catch (err) {
         setError('データの読み込み中にエラーが発生しました。後でもう一度お試しください。');
         console.error('Error fetching data:', err);
@@ -48,20 +35,7 @@ const FlashcardsPage = () => {
       }
     };
 
-    const fetchSubjectName = async () => {
-      try {
-        const fetchSubjects = localStorage.getItem('subjects')
-        if (fetchSubjects){
-          const parseSubjects: Subject[] = JSON.parse(fetchSubjects)
-          setSubjectName(parseSubjects.filter(s => s.id === Number(subjectId))[0].name);
-        }
-      } catch (error) {
-        console.error('Error fetching tags:', error);
-      }
-    };
-
     fetchData();
-    fetchSubjectName();
   }, [subjectId]);
 
   useEffect(() => {
@@ -69,8 +43,6 @@ const FlashcardsPage = () => {
   }, [words, filterMarked, sortMethod]);
 
   const fetchWords = async () => {
-    setIsLoading(true);
-    setError(null);
     try {
       const fetchWords = localStorage.getItem('words')
       if (fetchWords){
@@ -78,10 +50,7 @@ const FlashcardsPage = () => {
         setWords(parseWords.filter(w => w.subjectId === Number(subjectId)));
       }
     } catch (err) {
-      setError('Failed to fetch words. Please try again later.');
       console.error('Error fetching words:', err);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -93,6 +62,18 @@ const FlashcardsPage = () => {
       }
     } catch (err) {
       console.error('Error fetching tags:', err);
+    }
+  };
+
+  const fetchSubjectName = async () => {
+    try {
+      const fetchSubjects = localStorage.getItem('subjects')
+      if (fetchSubjects){
+        const parseSubjects: Subject[] = JSON.parse(fetchSubjects)
+        setSubjectName(parseSubjects.filter(s => s.id === Number(subjectId))[0].name);
+      }
+    } catch (error) {
+      console.error('Error fetching subject name:', error);
     }
   };
 
@@ -122,60 +103,6 @@ const FlashcardsPage = () => {
     setFilteredWords(sorted);
   };
 
-  const addWord = async () => {
-    if (newWord && newMeaning) {
-      try {
-        const postWord: Word = {
-          id: words.length + 1,
-          subjectId: Number(subjectId),
-          word: newWord,
-          meaning: newMeaning,
-          tagIds: newTags,
-          isMarked: false,
-          createdAt: new Date().toISOString()
-        }
-        const newWords = [...words, postWord]
-        localStorage.setItem('words', JSON.stringify(newWords))
-        setWords(newWords);
-        resetForm();
-      } catch (error) {
-        console.error('Error adding word:', error);
-      }
-    }
-  };
-
-  const updateWord = async () => {
-    if (selectedWord) {
-      try {
-        const putWord: Word = {
-          ...selectedWord,
-          word: newWord,
-          meaning: newMeaning,
-          tagIds: newTags
-        }
-        const newWords = words.map(w => w.id === putWord.id ? putWord : w)
-        localStorage.setItem('words', JSON.stringify(newWords))
-        setWords(newWords);
-        resetForm();
-      } catch (error) {
-        console.error('Error updating word:', error);
-      }
-    }
-  };
-
-  const deleteWord = async (id: number) => {
-    try {
-      const deleteWords = words.filter(w => w.id !== id)
-      localStorage.setItem('words', JSON.stringify(deleteWords))
-      setWords(deleteWords);
-      if (selectedWord && selectedWord.id === id) {
-        resetForm();
-      }
-    } catch (error) {
-      console.error('Error deleting word:', error);
-    }
-  };
-
   const toggleMarkWord = async (word: Word) => {
     try {
       const markedWord = { ...word, isMarked: !word.isMarked }
@@ -187,88 +114,22 @@ const FlashcardsPage = () => {
     }
   };
 
-  const addNewTag = async () => {
-    if (newTagName.trim()) {
-      try {
-        const newTag = {
-          id: tags.length + 1,
-          name: newTagName.trim()
-        }
-        const postTags = [...tags, newTag]
-        localStorage.setItem('tags', JSON.stringify(postTags))
-        setTags(postTags);
-        setNewTags([...newTags, newTag.id]);
-        setNewTagName('');
-        setShowNewTagDialog(false);
-      } catch (error) {
-        console.error('Error adding new tag:', error);
-      }
-    }
-  };
-
-  const resetForm = useCallback(() => {
-    setSelectedWord(null);
-    setNewWord('');
-    setNewMeaning('');
-    setNewTags([]);
-    setIsContentChanged(false);
-  }, []);
-
-  const startNewWord = () => {
-    if (isContentChanged) {
-      setShowWarning(true);
-      setPendingWordSelection(null);
-    } else {
-      resetForm();
+  const deleteWord = async (id: number) => {
+    try {
+      const deleteWords = words.filter(w => w.id !== id)
+      localStorage.setItem('words', JSON.stringify(deleteWords))
+      setWords(deleteWords);
+    } catch (error) {
+      console.error('Error deleting word:', error);
     }
   };
 
   const selectWord = (word: Word) => {
-    if (isContentChanged) {
-      setShowWarning(true);
-      setPendingWordSelection(word);
-    } else {
-      setSelectedWord(word);
-      setNewWord(word.word);
-      setNewMeaning(word.meaning);
-      setNewTags(word.tagIds);
-      setIsContentChanged(false);
-    }
+    navigate(`/flashcard/${subjectId}/edit/${word.id}`);
   };
 
-  const handleContentChange = useCallback(() => {
-    if (selectedWord) {
-      const isChanged = 
-        newWord !== selectedWord.word ||
-        newMeaning !== selectedWord.meaning ||
-        JSON.stringify(newTags.sort()) !== JSON.stringify(selectedWord.tagIds.sort());
-      setIsContentChanged(isChanged);
-    } else {
-      setIsContentChanged(newWord !== '' || newMeaning !== '' || newTags.length > 0);
-    }
-  }, [newWord, newMeaning, newTags, selectedWord]);
-
-  useEffect(() => {
-    handleContentChange();
-  }, [handleContentChange]); 
-
-  const handleWarningConfirm = () => {
-    setShowWarning(false);
-    if (pendingWordSelection) {
-      setSelectedWord(pendingWordSelection);
-      setNewWord(pendingWordSelection.word);
-      setNewMeaning(pendingWordSelection.meaning);
-      setNewTags(pendingWordSelection.tagIds);
-    } else {
-      resetForm();
-    }
-    setPendingWordSelection(null);
-    setIsContentChanged(false);
-  };
-
-  const handleWarningCancel = () => {
-    setShowWarning(false);
-    setPendingWordSelection(null);
+  const startNewWord = () => {
+    navigate(`/flashcard/${subjectId}/new`);
   };
 
   const goToSubjectList = () => {
@@ -293,7 +154,7 @@ const FlashcardsPage = () => {
         onNewWord={startNewWord}
       />
       
-      <div className="flex h-[calc(100vh-120px)]">
+      <div className="h-[calc(100vh-120px)]">
         <WordCardList
           words={filteredWords}
           tags={tags}
@@ -301,50 +162,7 @@ const FlashcardsPage = () => {
           onToggleMarkWord={toggleMarkWord}
           onDeleteWord={deleteWord}
         />
-        
-        <WordEditForm
-          newWord={newWord}
-          newMeaning={newMeaning}
-          newTags={newTags}
-          tags={tags}
-          selectedWord={selectedWord}
-          onWordChange={(value) => {
-            setNewWord(value);
-            handleContentChange();
-          }}
-          onMeaningChange={(value) => {
-            setNewMeaning(value);
-            handleContentChange();
-          }}
-          onTagsChange={(tagId: number) => {
-            setNewTags(prev => 
-              prev.includes(tagId) ? prev.filter(id => id !== tagId) : [...prev, tagId]
-            );
-            handleContentChange();
-          }}
-          onAddWord={addWord}
-          onUpdateWord={updateWord}
-          onResetForm={resetForm}
-          onShowNewTagDialog={() => setShowNewTagDialog(true)}
-        />
       </div>
-
-      <AlertComponent
-        isOpen={showWarning}
-        onClose={handleWarningCancel}
-        onConfirm={handleWarningConfirm}
-        title="警告"
-        description="編集中の内容は破棄されます。よろしいですか？"
-      />
-
-
-      <NewTagDialog
-        isOpen={showNewTagDialog}
-        onClose={() => setShowNewTagDialog(false)}
-        onConfirm={addNewTag}
-        newTagName={newTagName}
-        onNewTagNameChange={setNewTagName}
-      />
     </div>
   );
 };

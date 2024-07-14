@@ -5,7 +5,6 @@ import ErrorDisplay from '../common/ErrorDisplay';
 import TestHeader from './TestHeader';
 import QuestionCard from './QuestionCard';
 import TestResult from './TestResult';
-import { Subject } from '@/types';
 
 interface Question {
   id: number;
@@ -40,7 +39,6 @@ const AllQuestionsPage: React.FC = () => {
   const { subjectId, testId } = useParams<{ subjectId: string; testId: string }>();
 
   const [testSet, setTestSet] = useState<TestSet | null>(null);
-  const [subjectName, setSubjectName] = useState<string>('');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [correctAnswers, setCorrectAnswers] = useState<number>(0);
   const [showResult, setShowResult] = useState<boolean>(false);
@@ -54,17 +52,9 @@ const AllQuestionsPage: React.FC = () => {
       setError(null);
       try {
         const fetchTestSets = localStorage.getItem('testSets')
-        const fetchSubjects = localStorage.getItem('subjects')
-
         if (fetchTestSets){
           const parseTestSets: TestSet[] = JSON.parse(fetchTestSets)
           setTestSet(parseTestSets.filter(t => t.id === Number(testId))[0]);
-
-        }
-        if (fetchSubjects){
-          const parseSubjects: Subject[] = JSON.parse(fetchSubjects)
-          setSubjectName(parseSubjects.filter(s => s.id === Number(subjectId))[0].name);
-
         }
       } catch (err) {
         setError('Failed to fetch test data. Please try again later.');
@@ -153,7 +143,7 @@ const AllQuestionsPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 bg-gray-100">
-      <TestHeader subjectName={subjectName} testName={testSet.name} onBackClick={goToTestList} />
+      <TestHeader testName={testSet.name} onBackClick={goToTestList} />
       
       {showResult ? (
         <TestResult

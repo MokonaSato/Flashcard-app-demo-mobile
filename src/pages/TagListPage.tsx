@@ -136,7 +136,7 @@ const TagListPage: React.FC = () => {
         <Button onClick={goToSubjectList} variant="ghost" size="sm" className="mr-2">
           <ChevronLeft size={16} />
         </Button>
-        <h1 className="text-2xl font-bold">タグ一覧</h1>
+        <h1 className="text-xl font-bold">タグ一覧</h1>
       </div>
       <div className="flex justify-end mb-4">
         <Button onClick={() => setShowNewTagDialog(true)}>
@@ -155,7 +155,7 @@ const TagListPage: React.FC = () => {
                   className="w-full"
                 />
               ) : (
-                <CardTitle>{tag.name}</CardTitle>
+                <CardTitle className='text-xl'>{tag.name}</CardTitle>
               )}
               <Badge variant="secondary">{getWordCountForTag(tag.id)}単語</Badge>
             </CardHeader>

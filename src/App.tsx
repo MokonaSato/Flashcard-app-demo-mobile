@@ -4,6 +4,7 @@ import AllQuestionsPage from './pages/AllQuestionsPage/main';
 import TestListPage from './pages/TestListPage';
 import TestRankingPage from './pages/TestRankingPage';
 import TagListPage from './pages/TagListPage';
+import WordEditForm from './pages/FlashcardsPage/WordEditForm'
 import './App.css'
 import { Routes, Route } from "react-router-dom";
 
@@ -351,6 +352,8 @@ function App() {
       <Routes>
         <Route path="/" element={<SubjectListPage/>}/>
         <Route path="/flashcard/:subjectId" element={<FlashcardPage/>}/>
+        <Route path="/flashcard/:subjectId/edit/:wordId" element={<WordEditForm/>}/>
+        <Route path="/flashcard/:subjectId/new" element={<WordEditForm/>}/>
         <Route path="/tag" element={<TagListPage/>}/>
         <Route path="/testlist/:subjectId" element={<TestListPage/>}/>
         <Route path="/testlist/:subjectId/all-questions/:testId" element={<AllQuestionsPage/>}/>

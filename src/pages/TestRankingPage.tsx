@@ -137,12 +137,12 @@ const TestRankingPage: React.FC = () => {
   return (
     <div className="container mx-auto p-4 bg-gray-100">
       <div className="mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center">
-            <Button onClick={goToTestList} variant="ghost" size="sm" className="mr-2">
-              <ChevronLeft size={16} />
-            </Button>
-            <h1 className="text-2xl font-bold truncate">{testName} - 正答率ランキング</h1>
+        <div className="flex items-center mb-2">
+          <Button onClick={goToTestList} variant="ghost" size="sm" className="mr-2">
+            <ChevronLeft size={16} />
+          </Button>
+          <div>
+            <h1 className="text-xl font-bold">{testName}</h1>
           </div>
         </div>
         <div className="flex justify-end">
@@ -169,37 +169,39 @@ const TestRankingPage: React.FC = () => {
           }`} 
         >
           <CardContent className="p-4">
-            <div 
-              className="flex justify-between items-center cursor-pointer"
-              onClick={() => toggleQuestionExpansion(question.id)}
-            >
-              <div>
-                <span>問{question.id} {question.question}</span>
+              <div 
+                className="cursor-pointer"
+                onClick={() => toggleQuestionExpansion(question.id)}
+              >
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">問{question.id}</span>
+                  {expandedQuestionId === question.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                </div>
+                <div className="mt-1">
+                  <p>{question.question}</p>
+                  <div className="flex justify-end mt-1 mr-6">
+                    <span className={`font-semibold ${question.correctRate < 30 ? 'text-red-600' : ''}`}>
+                      正答率 {question.correctRate.toFixed(1)}%
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center">
-                <span className={`font-semibold ${question.correctRate < 30 ? 'text-red-600' : ''}`}>
-                  正答率 {question.correctRate.toFixed(2)}%
-                </span>
-                {expandedQuestionId === question.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-              </div>
-            </div>
-            {expandedQuestionId === question.id && questionDetails[question.id] && (
-              <div className="mt-4 pl-4 border-l-2 border-gray-200">
-                <ul className="list-disc pl-5 mb-2">
-                  {questionDetails[question.id].choices.map((choice, index) => (
-                    <li key={index}>
-                      {choice}
-                      {/* {choice === questionDetails[question.id].correctAnswer && ' (正解)'} */}
-                    </li>
-                  ))}
-                </ul>
-                <details>
-                  <summary>正解</summary>
-                  {questionDetails[question.id].correctAnswer}
-                </details>
-              </div>
-            )}
-          </CardContent>
+              {expandedQuestionId === question.id && questionDetails[question.id] && (
+                <div className="mt-4 pl-4 border-l-2 border-gray-200">
+                  <ul className="list-disc pl-5 mb-2">
+                    {questionDetails[question.id].choices.map((choice, index) => (
+                      <li key={index}>
+                        {choice}
+                      </li>
+                    ))}
+                  </ul>
+                  <details>
+                    <summary>正解</summary>
+                    {questionDetails[question.id].correctAnswer}
+                  </details>
+                </div>
+              )}
+            </CardContent>
         </Card>
         ))}
       </div>

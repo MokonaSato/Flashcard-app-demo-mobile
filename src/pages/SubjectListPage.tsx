@@ -140,7 +140,7 @@ const SubjectListPage: React.FC = () => {
                   className="mb-2"
                 />
               ) : (
-                <CardTitle>{subject.name}</CardTitle>
+                <CardTitle className='text-xl'>{subject.name}</CardTitle>
               )}
             </CardHeader>
             <CardContent>

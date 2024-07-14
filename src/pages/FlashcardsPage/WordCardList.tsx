@@ -26,7 +26,7 @@ const WordCardList: React.FC<WordCardListProps> = ({
   };
 
   return (
-    <div className="w-2/5 pr-4 overflow-y-auto">
+    <div className="pr-4 overflow-y-auto">
       {words.length === 0 ? (
         <div className="text-center text-gray-500 mt-8">
           単語カードがありません

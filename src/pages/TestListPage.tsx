@@ -23,7 +23,8 @@ const TestListPage: React.FC = () => {
       try {
         const fetchTestSets = localStorage.getItem('testSets')
         if (fetchTestSets){
-          setTestSets(JSON.parse(fetchTestSets));
+          const parseTestSets: TestSet[] = JSON.parse(fetchTestSets)
+          setTestSets(parseTestSets.filter(t => t.subjectId === Number(subjectId)));
         }
         const fetchSubjects: string | null = localStorage.getItem('subjects')
         if (fetchSubjects){
@@ -69,14 +70,20 @@ const TestListPage: React.FC = () => {
         <Button onClick={goToSubjectList} variant="ghost" size="sm" className="mr-2">
           <ChevronLeft size={16} />
         </Button>
-        <h1 className="text-2xl font-bold">{subjectName} - テスト一覧</h1>
+        <div>
+          <h1 className="text-xl font-bold">{subjectName}</h1>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {testSets.map((testSet) => (
+        {testSets.length === 0 ? (
+        <div className="text-center text-gray-500 mt-8">
+          テストがありません
+        </div>
+        ) : testSets.map((testSet) => (
           <Card key={testSet.id} className='shadow'>
             <CardHeader>
-              <CardTitle>{testSet.name}</CardTitle>
+              <CardTitle className='text-xl'>{testSet.name}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="mb-4">問題数: {testSet.questions.length}</p>

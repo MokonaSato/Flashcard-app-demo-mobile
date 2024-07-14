@@ -78,3 +78,13 @@
 :root{
   background-color: rgb(244, 244, 245);
 }
+
+.quill {
+  .ql-toolbar {
+      background-color: rgb(200, 200, 200); /* bg-slate-400 */
+  }
+
+  .ql-editor {
+      background-color: white;
+  }
+}
